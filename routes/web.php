@@ -13,6 +13,30 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+
+$router->group(['prefix' => 'api'], function () use ($router) {
+
+    $router->post('user/register', [
+        'uses' => AuthController::class.'@register',
+    ]);
+    $router->patch('user/recover-password', [
+        'uses' => AuthController::class.'@recoverPassword',
+    ]);
+    $router->patch('user/sign-in', [
+        'uses' => AuthController::class.'@signIn',
+    ]);
+
+    $router->group(['middleware' => 'auth'], function () use ($router) {
+        $router->get('user/companies', [
+            'uses' => UserController::class.'@gatCompanies',
+        ]);
+        $router->post('user/companies', [
+            'uses' => UserController::class.'@addCompany',
+        ]);
+    });
+
 });
+
+
